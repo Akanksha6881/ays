@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Results - AreYouSecure (AYS)</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-shield-alt me-2"></i>
+                AreYouSecure (AYS)
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Verify Identity</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">About Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-4">
+                    <h1 class="display-5 mb-3">
+                        <i class="fas fa-clipboard-check"></i>
+                        Verification Results
+                    </h1>
+                </div>
+
+                <!-- Overall Status -->
+                <div class="card shadow-lg mb-4">
+                    <div class="card-header {% if results.success %}bg-success{% else %}bg-warning{% endif %} text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-{% if results.success %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                            {% if results.success %}Verification Completed{% else %}Verification Issues{% endif %}
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {% if results.success %}
+                            <div class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Identity verification process completed successfully.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Verification completed with some issues. Please review the details below.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Results Grid -->
+                <div class="row">
+                    <!-- Personal Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user me-2"></i>
+                                    Personal Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <strong>Date of Birth:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        {% if results.dob %}
+                                            <span class="text-success">{{ results.dob }}</span>
+                                        {% else %}
+                                            <span class="text-danger">Not extracted</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <strong>Age:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        {% if results.age is not none %}
+                                            <span class="text-success">{{ results.age }} years</span>
+                                        {% else %}
+                                            <span class="text-danger">Could not calculate</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <strong>Adult Status:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        {% if results.is_adult is not none %}
+                                            {% if results.is_adult %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i>18+ Eligible
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times me-1"></i>Under 18
+                                                </span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Unknown</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Face Matching Results -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-face-laugh me-2"></i>
+                                    Face Matching Results
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <strong>Face Match:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        {% if results.face_match %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Match Found
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>No Match
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <strong>Similarity Score:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">{{ "%.2f"|format(results.similarity_score * 100) }}%</span>
+                                            <div class="progress flex-grow-1" style="height: 20px;">
+                                                <div class="progress-bar 
+                                                    {% if results.similarity_score >= 0.8 %}bg-success
+                                                    {% elif results.similarity_score >= 0.6 %}bg-warning
+                                                    {% else %}bg-danger
+                                                    {% endif %}" 
+                                                    role="progressbar" 
+                                                    style="width: {{ results.similarity_score * 100 }}%">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <strong>Confidence:</strong>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        {% if results.similarity_score >= 0.8 %}
+                                            <span class="badge bg-success">High</span>
+                                        {% elif results.similarity_score >= 0.6 %}
+                                            <span class="badge bg-warning">Medium</span>
+                                        {% elif results.similarity_score >= 0.4 %}
+                                            <span class="badge bg-danger">Low</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Very Low</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Quality Assessment -->
+                {% if results.selfie_quality %}
+                <div class="card mb-4">
+                    <div class="card-header {% if results.selfie_quality.quality_score > 0.7 %}bg-success{% elif results.selfie_quality.quality_score > 0.4 %}bg-warning{% else %}bg-danger{% endif %} text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-camera me-2"></i>
+                            Photo Quality Assessment
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Overall Quality:</strong>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar {% if results.selfie_quality.quality_score > 0.7 %}bg-success{% elif results.selfie_quality.quality_score > 0.4 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                         style="width: {{ (results.selfie_quality.quality_score * 100)|round }}%">
+                                        {{ (results.selfie_quality.quality_score * 100)|round }}%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Brightness:</strong>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-info" 
+                                         style="width: {{ (results.selfie_quality.brightness_score * 100)|round }}%">
+                                        {{ (results.selfie_quality.brightness_score * 100)|round }}%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Sharpness:</strong>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-primary" 
+                                         style="width: {{ (results.selfie_quality.sharpness_score * 100)|round }}%">
+                                        {{ (results.selfie_quality.sharpness_score * 100)|round }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if results.selfie_quality.feedback %}
+                        <div class="alert alert-info">
+                            <strong>Feedback:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for feedback in results.selfie_quality.feedback %}
+                                    <li>{{ feedback }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Errors Section -->
+                {% if results.errors %}
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Processing Issues
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            {% for error in results.errors %}
+                                <li class="mb-2">
+                                    <i class="fas fa-times text-danger me-2"></i>
+                                    {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Summary Card -->
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Verification Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="{% if results.dob %}text-success{% else %}text-danger{% endif %}">
+                                        <i class="fas fa-{% if results.dob %}check{% else %}times{% endif %}"></i>
+                                    </h4>
+                                    <small class="text-muted">DOB Extracted</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="{% if results.age is not none %}text-success{% else %}text-danger{% endif %}">
+                                        <i class="fas fa-{% if results.age is not none %}check{% else %}times{% endif %}"></i>
+                                    </h4>
+                                    <small class="text-muted">Age Calculated</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border-end">
+                                    <h4 class="{% if results.face_match %}text-success{% else %}text-danger{% endif %}">
+                                        <i class="fas fa-{% if results.face_match %}check{% else %}times{% endif %}"></i>
+                                    </h4>
+                                    <small class="text-muted">Face Match</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="{% if results.is_adult %}text-success{% elif results.is_adult == false %}text-warning{% else %}text-danger{% endif %}">
+                                    <i class="fas fa-{% if results.is_adult %}check{% elif results.is_adult == false %}exclamation{% else %}times{% endif %}"></i>
+                                </h4>
+                                <small class="text-muted">18+ Status</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-redo me-2"></i>
+                        New Verification
+                    </a>
+                    <button onclick="window.print()" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-print me-2"></i>
+                        Print Results
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
